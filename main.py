@@ -14,9 +14,8 @@ def getAllowedChars():
 
 
 def validateWord(allowedChars, word):
-
     accepted = True
-    word = word[0:len(word)-1]
+    word = word[0:len(word) - 1]
     print(word)
     for letter in word:
         if letter in allowedChars:
@@ -42,11 +41,9 @@ def main():
         print(fontName)
         font = ImageFont.truetype(fontsDirectory + "/" + fontName, size=60)
         fontBaseName = fontName[0:len(fontName) - 4]
-        try:
-            os.mkdir(outPutDirectory + "/" + fontBaseName)
-        except:
-            print('hihi')
-            pass
+
+        os.mkdir(outPutDirectory + "/" + fontBaseName)
+
         with open('wordsList.txt') as topo_file:
             for text in topo_file:
                 if validateWord(allowedChars, text):
