@@ -41,9 +41,10 @@ def main():
         print(fontName)
         font = ImageFont.truetype(fontsDirectory + "/" + fontName, size=60)
         fontBaseName = fontName[0:len(fontName) - 4]
-
-        os.mkdir(outPutDirectory + "/" + fontBaseName)
-
+        try:
+            os.mkdir(outPutDirectory + "/" + fontBaseName)
+        except:
+            pass
         with open('wordsList.txt') as topo_file:
             for text in topo_file:
                 if validateWord(allowedChars, text):
