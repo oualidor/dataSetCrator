@@ -13,56 +13,84 @@ def getAllowedChars():
     return chars
 
 
-def validateWord(allowedChars, word):
+def isValidWord(allowedChars, word):
+    if len(word) == 0:
+        return False
     accepted = True
-    word = word[0:len(word) - 1]
-    print(word)
     for letter in word:
         if letter in allowedChars:
             pass
         else:
             accepted = False
+    if not accepted:
+        pass
     return accepted
 
 
-def main():
-    allowedChars = getAllowedChars()
-    width = 400;
-    height = 200
-    back_ground_color = (255, 255, 255)
-    textColor = (0, 0, 0)
-    fontsDirectory = "fonts"
-    outPutDirectory = "createResult"
-    fonts = os.listdir(fontsDirectory)
-    textToCreate = 100
-    j = 0
-    for fontName in fonts:
+def getToPop(allowedChars, word):
+    toPop = []
+    for i in range(len(word)):
+        letter = word[i]
+        if letter in allowedChars:
 
-        print(fontName)
-        font = ImageFont.truetype(fontsDirectory + "/" + fontName, size=60)
-        fontBaseName = fontName[0:len(fontName) - 4]
-        try:
-            os.mkdir(outPutDirectory + "/" + fontBaseName)
-        except:
             pass
-        with open('wordsList.txt') as topo_file:
-            for text in topo_file:
-                if validateWord(allowedChars, text):
-                    im = Image.new("RGB", (width, height), back_ground_color)
-                    canvas = ImageDraw.Draw(im)
-                    canvas.text((20, 20), text, fill=textColor, font=font, direction="rtl")
-                    im.save(outPutDirectory + "/" + fontBaseName + "/" + str(j) + ".png")
-                    lineToWrite = outPutDirectory + "/" + fontBaseName + "/" + str(j) + ".png," + text
-                    writeToFile('words.txt', lineToWrite)
-                    j = j + 1
-                else:
-                    print('ignoring: ' + text)
+        else:
+            toPop.append(i)
+
+    return toPop
+
+
+def validateWord(allowedChars, word):
+    toPop = getToPop(allowedChars, word)
+    if len(toPop) == 0:
+        return word
+    word = list(word)
+    word.pop(toPop[0])
+    if len(toPop) == 1:
+        return ''.join(word)
+    else:
+        return validateWord(allowedChars, ''.join(word))
+
+
+def writeWordsToFile():
+    valid = 0
+    invalid = 0
+    allowedChars = getAllowedChars()
+    articleTitleGenerator = jsonNextLine()
+    f = open('wordsToDraw.txt', 'w')
+    while True:
+        try:
+            title = next(articleTitleGenerator)
+            wordGenerator = entryNextEntity(title)
+            while True:
+                try:
+                    rawWord = next(wordGenerator)
+                    validatedWord = validateWord(allowedChars, rawWord)
+                    if isValidWord(allowedChars, validatedWord):
+                        f.write(validatedWord + '\n')
+                        valid = valid + 1
+                    else:
+                        invalid = invalid + 1
+                except StopIteration:
+                    break
+        except StopIteration:
+            break
+    print('valid' + str(valid))
+    print('invalid' + str(invalid))
+
+
+def main():
+    writeWordsToFile()
 
 
 def test():
-    t = ['a', 'b']
-    if 'c' in t:
-        print('in')
+    allowedChars = getAllowedChars()
+    # letter = 'ر'
+
+    # print(letter in allowedChars)
+
+    print(validateWord(allowedChars, 'لـ”عين'))
 
 
-main()
+if __name__ == '__main__':
+    main()
